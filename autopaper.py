@@ -1,5 +1,6 @@
 import requests
 import json
+import constants as const
 
 '''
 NOTE: The platform functionality does not work since I cannot get unsplash and pixabay api
@@ -8,38 +9,36 @@ in the request and the header has a certain format in which you embed the access
 know how to implement that. I just wanted to have the option although it is not necessary. I just
 want to get the app to work and this is something I could do to add as an extra feature
 
-===================
+=========================
 Unsplash API requirements 
-=====================
+=========================
 
 access_key, secret_key
 https://api.unsplash.com/photos/random
 implementation status: unknown;
 
-===================
+========================
 #Pixabay API format
-===================
+========================
 
 requires access key 
 url
 implementation status: unknown;
 
-===================
+=======================
 #Pexels API format
-==================
+=======================
 
 apikey, url
 implementation status: underway;
 
-===================
+=======================
 '''
 
 platform_dict = {
 	"unsplash":'https://api.unsplash.com/photos/random',
-	"pexels":'' #TODO, I'm leaving this out for now since I can't get it to work
-	"pixabay":
-		"apikey": 
-		"url":'"https://pixabay.com/api/?key="'
+	"pexels":'', #TODO, I'm leaving this out for now since I can't get it to work
+	"pixabay":"https://pixabay.com/api/?key="+const.API_KEY
 }
 
 options = ['unsplash','pexels','pixabay']
@@ -53,20 +52,47 @@ def main():
 	# 	platform = input('Please choose between unsplash, pexels and pixabay: ');
 	# 	platform.lower()
 
-	# print('\n Thank you :\n\n[SEARCHING] locating resources...)')
+	# print('\n Thank you :)')
 
 	url = platform_dict['pixabay']
-	print('\n\n[SEARCHING] location resources...');
-	response_obj = requests.get(url)
-	print('Resource found parsing [JSON]')
+	print('\n\n[SEARCHING] locating resources...');
+	try:
 
-	# json_data = json.loads(response_obj)
-	print('JSON data\n ', '='*10)
-	print(response_obj.text)
+		response_obj = requests.get(url)
+
+	except:
+
+		#In the case that the request has failed
+		print('Could not find resource or denied request')
+
+	else:
+		
+		#in the case that the request is successful'''
+		print('Resource found, parsing JSON...')
+
+		json_data = response_obj.json()
+		line_break = '='*10
+
+		img_url = json_data['hits'][0]['largeImageURL']
+		print('\n[SEARCHING] requesting image...')
+		
+		try: 
+			response_obj = requests.get(img_url)
+		except:
+			print('Image URL does not exist or has expired')
+		else:
+			print('\nImage found!!!\n')
+			print('[WRITING] writing image to file...')
+			
+			img_data = response_obj.content
+			img_name = 'myimage'
+			path = "./images/{}.jpg".format(img_name)
+			print(line_break+'\n'+path+'\n'+line_break) 
+
+			with open(path,'wb') as handler:
+				handler.write(img_data)
+
+			print('FINISHED. Enjoy your image')
 
 if __name__ == '__main__':
 	main()
-
-
-''' The print statements are for debuggin purposes. 
-
