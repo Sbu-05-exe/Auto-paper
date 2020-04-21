@@ -8,7 +8,8 @@ A simple program that changes you wallpaper randomly.
 
 **completed**
 -api functionality
+-random images functionality
 
 **remaining tasks**
--add random functionality
 -change the wallpaper 
+-get the wallpaper to change on a regular basis
